@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <title>Sample "Hello, World" Application</title>
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <script>
+      $(window).load(function(){
+        $('#search').keyup(function(){
+          var searchField = $('#search').val();
+          var regex = new RegExp(searchField, "i");
+          var output = '<div class="row">';
+          var count = 1;
+          $.getJSON('json/data.json', function(data) {
+            $.each(data, function(key, val){
+              if ((val.name.search(regex) != -1) || (val.location.search(regex) != -1)) {
+                output += '<div class="col-md-6 well">';
+                output += '<div class="col-md-3"><img class="img-responsive" src="'+val.avatar+'" alt="'+ val.name +'" /></div>';
+                output += '<div class="col-md-7">';
+                output += '<h5>' + val.name + '</h5>';
+                output += '<p>' + val.location + '</p>'
+                output += '</div>';
+                output += '</div>';
+                if(count%2 == 0){
+                  output += '</div><div class="row">'
+                }
+                count++;
+              }
+            });
+            output += '</div>';
+            $('#results').html(output);
+          });
+        });
+      });
+    </script>
+  </head>
+  <body bgcolor=white>
+    <form role="form">
+      <div class="form-group">
+        <input type="email" class="form-control input-lg" id="search" placeholder="Start type 'a' ....">
+      </div>
+      <div id="results"></div>
+    </form>
+  </body>
+</html>
