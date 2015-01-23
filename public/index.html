@@ -10,19 +10,22 @@
           var output = '<div class="row">';
           var count = 1;
           $.getJSON('json/data.json', function(data) {
-            $.each(data, function(key, val){
-              if ((val.name.search(regex) != -1) || (val.location.search(regex) != -1)) {
-                output += '<div class="col-md-6 well">';
-                output += '<div class="col-md-3"><img class="img-responsive" src="'+val.avatar+'" alt="'+ val.name +'" /></div>';
-                output += '<div class="col-md-7">';
-                output += '<h5>' + val.name + '</h5>';
-                output += '<p>' + val.location + '</p>'
-                output += '</div>';
+            $.each(data.suggestions, function(key, val){
+              if ((val.search(regex) != -1)) {
+                output += '<div>';
+                output += '<h5>' + val + '</h5>';
                 output += '</div>';
                 if(count%2 == 0){
                   output += '</div><div class="row">'
                 }
                 count++;
+              }
+            });
+            $.each(data.hightlights, function(key, val){
+              if(val.queries.indexOf(searchField) != -1){
+                output += '<div>';
+                output += '<h1>' + val.title + '</h1>';
+                output += '</div>';
               }
             });
             output += '</div>';
