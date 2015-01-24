@@ -1,46 +1,60 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>Sample "Hello, World" Application</title>
-    <script src="js/jquery-2.1.3.min.js"></script>
-    <script>
-      $(window).load(function(){
-        $('#search').keyup(function(){
-          var searchField = $('#search').val();
-          var regex = new RegExp(searchField, "i");
-          var output = '<div class="row">';
-          var count = 1;
-          $.getJSON('json/data.json', function(data) {
-            $.each(data.suggestions, function(key, val){
-              if ((val.search(regex) != -1)) {
-                output += '<div>';
-                output += '<h5>' + val + '</h5>';
-                output += '</div>';
-                if(count%2 == 0){
-                  output += '</div><div class="row">'
-                }
-                count++;
-              }
-            });
-            $.each(data.hightlights, function(key, val){
-              if(val.queries.indexOf(searchField) != -1){
-                output += '<div>';
-                output += '<h1>' + val.title + '</h1>';
-                output += '</div>';
-              }
-            });
-            output += '</div>';
-            $('#results').html(output);
-          });
+<head>
+  <meta charset="UTF-8">
+
+  <title>Sample "Hello, World" Application</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <script src="js/jquery-2.1.3.min.js"></script>
+  <script>
+  removeAccents = function (str) {
+    var r = str.toLowerCase(), i,
+    nonAsciis = {a: '[àáâãäå]', ae: 'æ', c: 'ç', e: '[èéêë]', i: '[ìíîï]', n: 'ñ', o: '[òóôõö]', oe: 'œ', u: '[ùúûűü]', y: '[ýÿ]'};
+
+    for (i in nonAsciis) {
+      r = r.replace(new RegExp(nonAsciis[i], 'g'), i);
+    }
+    return r;
+  };
+
+
+  $(function(){
+    var json = $.getJSON('json/data.json');
+
+    $('#search').keyup(function(){
+      var searchField = removeAccents(this.value),
+      regex = new RegExp(searchField, "i"),
+      output = '';
+      if(!searchField) {
+        $('#results').html('');
+        return;
+      }
+      json.done(function(data) {
+
+        $.each(data.hightlights, function(key, val){
+          if(val.queries.indexOf(searchField) != -1){
+            output += '<a href="'+ val.url + '" class="list-group-item">' + val.title + '</a>';
+          }
         });
+
+        $.each(data.suggestions, function(key, val){
+          if ((val.search(regex) != -1)) {
+            output += '<a href="http://g1.globo.com/busca/?q=' + val +'" class="list-group-item">' + val + '</a>';
+          }
+        });
+
+        $('#results').html(output);
       });
-    </script>
-  </head>
-  <body bgcolor=white>
-    <form role="form">
-      <div class="form-group">
-        <input type="email" class="form-control input-lg" id="search" placeholder="Start type 'a' ....">
-      </div>
-      <div id="results"></div>
-    </form>
-  </body>
+    });
+  });
+</script>
+</head>
+<body>
+  <form role="form">
+    <div class="col-md-3">
+      <input type="text" style="margin-top:10px" class="form-control" id="search" autocomplete="off" placeholder="Busque...">
+      <div id="results" class="list-group"></div>
+    </div>
+  </form>
+</body>
 </html>
