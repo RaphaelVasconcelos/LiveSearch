@@ -7,7 +7,15 @@
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <script src="js/jquery-2.1.3.min.js"></script>
   <script>
-  removeAccents = function (str) {
+    removeAccentsInArray = function (params){
+      var newParams = [];
+      for(i=0;i<params.length;i++){
+        newParams.push(removeAccents(params[i]));
+      }
+      return newParams;
+    }
+
+    removeAccents = function (str) {
     var r = str.toLowerCase(), i,
     nonAsciis = {a: '[àáâãäå]', ae: 'æ', c: 'ç', e: '[èéêë]', i: '[ìíîï]', n: 'ñ', o: '[òóôõö]', oe: 'œ', u: '[ùúûűü]', y: '[ýÿ]'};
 
@@ -16,7 +24,6 @@
     }
     return r;
   };
-
 
   $(function(){
     var json = $.getJSON('json/data.json');
@@ -32,8 +39,9 @@
       json.done(function(data) {
 
         $.each(data.hightlights, function(key, val){
-          if(val.queries.indexOf(searchField) != -1){
-            output += '<a href="'+ val.url + '" class="list-group-item">' + val.title + '</a>';
+          var arrayWithoutAccents = removeAccentsInArray(val.queries);
+          if(arrayWithoutAccents.indexOf(searchField) != -1){
+            output += '<a href="'+ val.url + '" class="list-group-item active"> <strong>' + val.title + '</strong></a>';
           }
         });
 
